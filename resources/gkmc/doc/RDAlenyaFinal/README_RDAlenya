@@ -1,0 +1,96 @@
+About RDAlenya:
+---------------
+RDAlenya is written to study the diffusion limited reactions of hydrogen
+isotopes, in Graphite by Manoj Warrier (manoj.Warrier - - gmail.com) and Abha
+Rai (abra - - ipp.mpg.de). It uses Kinetic Monte Carlo (KMC), specifically,
+the Bortz-Kalos-Liebowitz (BKL) algorithm [A. B. Bortz, M. H. Kalos,
+J. L. Lebowitz, J. Comp. Phys., 17 (1975) 10 as elucidated in Kai Nordlund's
+notes on Monte Carlo [http://beam.acclab.helsinki.fi/~knordlun/mc/mc8nc.pdf].
+Duane Johnson's notes on the WWW
+[http://www.mcc.uiuc.edu/summerschool/2001/duane%20johnson/kmc_ss.pdf]
+The theoritical foundations of dynamical Monte-Carlo is available at
+[http://www.mcc.uiuc.edu/summerschool/2001/duane%20johnson/Fichthorn.pdf]
+
+It is written in C (gcc) and uses the GNU Scientific Library available
+at [http://www.gnu.org/software/gsl/]. GSL is available under the GNU public
+license. The code and GSL are highly portable and should work on any *nix
+machine with a C compiler. If it does not please send me (M. Warrier) a sample
+computer and compiler (hopefully with a lifetime license) and I promise to get
+it working on it :-). Please note that this is a pre-alpha release and is
+mainly meant for pedagogical purposes.
+
+Units used: All units are in MKS system unless otherwise specified. This is an
+adapted version for the Summer School on hydrogen surface interactions to be
+held between June 8^th to 13^th 2008 at Alenya, France.
+
+License:
+--------
+Copyright (C) <2008>  <Manoj Warrier>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+Organization of files:
+----------------------
+The directory tree looks like this:
+
+RDAlenya
+
+  --doc                -|  Documentation
+  --doc/ModelingPSI.pdf-|
+
+  --inp                -|
+  --inp/geometry.inp    |  Inputs
+  --inp/RDAlenya.inp   -|
+
+  --out                 |  Outputs
+
+  --src                 |  Sources
+
+  --newrun              |  file to create a new run
+
+  --README_RDAlenya     |  This file
+
+  --LICENSE             |  License file (GNU GPL)
+
+Running the code:
+-----------------
+cd to the src directory
+do: make - to compile the code (making changes to GNU Scientific Library PATH
+                                if necessary)
+    make run -> to run the code
+
+Inputs:
+-------
+    Assigned/Input Parameters in RDAlenya.inp:
+        GammaP[i] -> Incident particle flux of i^th species.
+        StickCoef[i] - > Sticking co-efficient of i^th species.
+	NParts[i] -> Number of particles of type i (i=1-n_species).
+	NJumps[i] -> Number of varieties of jumps of particles of
+                     type i (i=1-n_species).
+	JmpFreq[i][j] -> Jump frequency of the j^th interaction of
+                         specie i (1/sec).
+	JmpDist[i][j] -> Jump distance of the j^th interaction of
+                         specie i (meters).
+	Em[i][j] -> Migration activation energy of the j^th interaction
+                    of specie i (eV).
+	InteractDist[n] -> Minimum distance below which the n^th 
+                           interaction recombines (Angstroms).
+	MaxSteps -> Maximum number of steps without interaction
+	            to stop simulation.
+	NTrials -> Number of trials for statistics.
+	Temp -> Temperature of the material (Kelvins).
+        NPosition -> Number of iterations after which Positions of the various
+            particles must be output.
+        NTransient -> Number of iterations after which transient quantities of
+            interest must be output.
