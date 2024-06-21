@@ -15,21 +15,47 @@ N = 20
 res = []
 t = 0
 for _ in range(2**N):
-    if t > 3:
+    if t > 5:
         break
     rx = np.random.randint(0, w)
     ry = np.random.randint(0, h)
     r = np.random.rand()
-    if occ[rx, ry] == 0 and r < Wa:
+
+    rates = [ra, rd]
+    cummRates = []
+    c = 0
+    for i, r in enumerate(rates):
+        c += r
+        cummRates.append(c)
+
+    uQ = np.random.rand() * cummRates[-1]
+    for i, r in enumerate(cummRates):
+        if r > uQ:
+            procindex = i
+            break
+
+    if procindex == 0:
         occ[rx, ry] = 1
         u = np.random.rand()
         dt = -np.log(u) / (h * w * ra)
         t += dt
-    elif occ[rx, ry] == 1 and r < Wd:
+    else:
         occ[rx, ry] = 0
         u = np.random.rand()
         dt = -np.log(u) / (h * w * rd)
         t += dt
+
+    # if occ[rx, ry] == 0 and r < Wa:
+    #     occ[rx, ry] = 1
+    #     u = np.random.rand()
+    #     dt = -np.log(u) / (h * w * ra)
+    #     t += dt
+    # elif occ[rx, ry] == 1 and r < Wd:
+    #     occ[rx, ry] = 0
+    #     u = np.random.rand()
+    #     dt = -np.log(u) / (h * w * rd)
+    #     t += dt
+
     if _ % 100 == 0:
         theta = sum(occ.flatten()) / (h * w)
         res.append((theta, t))
