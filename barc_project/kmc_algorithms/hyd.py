@@ -8,25 +8,23 @@ w = 200
 occ = np.zeros((w, h))
 ra = 1
 rd = 2
-Wa = 0.5
-Wd = 1
 N = 20
 
 res = []
 t = 0
+rates = [ra, rd]
+cummRates = []
+c = 0
+for i, r in enumerate(rates):
+    c += r
+    cummRates.append(c)
+
 for _ in range(2**N):
     if t > 5:
         break
     rx = np.random.randint(0, w)
     ry = np.random.randint(0, h)
     r = np.random.rand()
-
-    rates = [ra, rd]
-    cummRates = []
-    c = 0
-    for i, r in enumerate(rates):
-        c += r
-        cummRates.append(c)
 
     uQ = np.random.rand() * cummRates[-1]
     for i, r in enumerate(cummRates):
@@ -37,24 +35,13 @@ for _ in range(2**N):
     if procindex == 0:
         occ[rx, ry] = 1
         u = np.random.rand()
-        dt = -np.log(u) / (h * w * ra)
+        dt = -np.log(u) / (h * w * cummRates[-1])
         t += dt
     else:
         occ[rx, ry] = 0
         u = np.random.rand()
-        dt = -np.log(u) / (h * w * rd)
+        dt = -np.log(u) / (h * w * cummRates[-1])
         t += dt
-
-    # if occ[rx, ry] == 0 and r < Wa:
-    #     occ[rx, ry] = 1
-    #     u = np.random.rand()
-    #     dt = -np.log(u) / (h * w * ra)
-    #     t += dt
-    # elif occ[rx, ry] == 1 and r < Wd:
-    #     occ[rx, ry] = 0
-    #     u = np.random.rand()
-    #     dt = -np.log(u) / (h * w * rd)
-    #     t += dt
 
     if _ % 100 == 0:
         theta = sum(occ.flatten()) / (h * w)
