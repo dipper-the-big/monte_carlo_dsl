@@ -5,25 +5,24 @@ import matplotlib.pyplot as plt
 
 h = 200
 w = 200
-occ = np.zeros((w, h))
+occ = []
 ra = 1
 rd = 2
 N = 20
 
 res = []
 t = 0
-rates = [ra, rd]
-cummRates = []
-c = 0
-for i, r in enumerate(rates):
-    c += r
-    cummRates.append(c)
 
 for _ in range(2**N):
     if t > 3:
         break
-    rx = np.random.randint(0, w)
-    ry = np.random.randint(0, h)
+
+    rates = [((h * w) - len(occ)) * ra, len(occ) * rd]
+    cummRates = []
+    c = 0
+    for i, r in enumerate(rates):
+        c += r
+        cummRates.append(c)
 
     uQ = np.random.rand() * cummRates[-1]
     for i, r in enumerate(cummRates):
@@ -32,18 +31,22 @@ for _ in range(2**N):
             break
 
     if procindex == 0:
-        occ[rx, ry] = 1
+        rx = np.random.rand() * w
+        ry = np.random.rand() * h
+        occ.append((rx, ry))
         u = np.random.rand()
-        dt = -np.log(u) / (h * w * cummRates[-1])
+        dt = -np.log(u) / cummRates[-1]
         t += dt
     else:
-        occ[rx, ry] = 0
-        u = np.random.rand()
-        dt = -np.log(u) / (h * w * cummRates[-1])
-        t += dt
+        if len(occ):
+            i = np.random.randint(0, len(occ))
+            occ.pop(i)
+            u = np.random.rand()
+            dt = -np.log(u) / cummRates[-1]
+            t += dt
 
     if _ % 100 == 0:
-        theta = sum(occ.flatten()) / (h * w)
+        theta = len(occ) / (h * w)
         res.append((theta, t))
 
 
