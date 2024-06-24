@@ -20,11 +20,10 @@ for i, r in enumerate(rates):
     cummRates.append(c)
 
 for _ in range(2**N):
-    if t > 5:
+    if t > 3:
         break
     rx = np.random.randint(0, w)
     ry = np.random.randint(0, h)
-    r = np.random.rand()
 
     uQ = np.random.rand() * cummRates[-1]
     for i, r in enumerate(cummRates):
