@@ -39,16 +39,16 @@ class System(dict):
                 reaction(self)
 
 
-class PBCParticle2D:
-    def __init__(self, x, y, h, w):
-        self.h = h
-        self.w = w
-        self.x = x
-        self.y = y
+# class PBCParticle2D:
+#     def __init__(self, x, y, h, w):
+#         self.h = h
+#         self.w = w
+#         self.x = x
+#         self.y = y
 
-    def move(self, dx, dy):
-        self.x = (self.x + dx) % self.w
-        self.y = (self.y + dy) % self.h
+#     def move(self, dx, dy):
+#         self.x = (self.x + dx) % self.w
+#         self.y = (self.y + dy) % self.h
 
 
 def bkl(processes, system, predicate):
