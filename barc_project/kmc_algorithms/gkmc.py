@@ -2,7 +2,6 @@
 
 import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 
 
 class Process:
@@ -39,22 +38,23 @@ class System(dict):
                 reaction(self)
 
 
-# class PBCParticle2D:
-#     def __init__(self, x, y, h, w):
-#         self.h = h
-#         self.w = w
-#         self.x = x
-#         self.y = y
+class PBCParticle2D:
+    def __init__(self, x, y, h, w):
+        self.h = h
+        self.w = w
+        self.x = x
+        self.y = y
 
-#     def move(self, dx, dy):
-#         self.x = (self.x + dx) % self.w
-#         self.y = (self.y + dy) % self.h
+    def move(self, dx, dy):
+        self.x = (self.x + dx) % self.w
+        self.y = (self.y + dy) % self.h
+
+    def __repr__(self):
+        return f'Particle({self.x}, {self.y})'
 
 
-def bkl(processes, system, predicate):
-    res = []
-    # while predicate(system):
-    for i in tqdm(range(predicate)):
+def bkl(processes, system, steps, record=None, viz=None):
+    for i in tqdm(range(steps)):
         rates = [proc.rate(system) for proc in processes]
         cummRates = []
         c = 0
@@ -74,9 +74,8 @@ def bkl(processes, system, predicate):
         dt = -np.log(u) / cummRates[-1]
         system.update(dt)
 
-        if i % 100 == 0:
-            res.append((len(system.particlesH), system.time))
+        if record:
+            record(system, i)
 
-    res = np.array(res)
-    plt.plot(res[:, 1], res[:, 0])
-    plt.show()
+    if viz:
+        viz(system)
