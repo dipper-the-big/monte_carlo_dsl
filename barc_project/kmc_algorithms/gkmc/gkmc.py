@@ -6,6 +6,17 @@ from tqdm import tqdm
 kb = 8.617e-5
 
 
+def rate_calc(v, Em, temp):
+    return v * np.exp(-Em / (kb * temp))
+
+
+class Species:
+    def __init__(self, particle, store):
+        self.particle = particle
+        self.store = store
+        self.dirty = []
+
+
 class Process:
     def __init__(self, procfunc, rate):
         self.procfunc = procfunc
@@ -40,21 +51,6 @@ class System(dict):
                 reaction(self)
 
 
-class PBCParticle2D:
-    def __init__(self, x, y, h, w):
-        self.h = h
-        self.w = w
-        self.x = x
-        self.y = y
-
-    def move(self, dx, dy):
-        self.x = (self.x + dx) % self.w
-        self.y = (self.y + dy) % self.h
-
-    def __repr__(self):
-        return f'Particle({self.x}, {self.y})'
-
-
 def bkl(processes, system, steps, record=None, viz=None):
     for i in tqdm(range(steps)):
         rates = [proc.rate(system) for proc in processes]
@@ -84,5 +80,3 @@ def bkl(processes, system, steps, record=None, viz=None):
         viz(system)
 
 
-def rate(v, Em, temp):
-    return v * np.exp(-Em / (kb * temp))

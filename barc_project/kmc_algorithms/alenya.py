@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from gkmc.gkmc import Process, System, bkl
+from gkmc.particles import PBCParticle2D
 from gkmc.processes import jumpProcess, destroyProcess, spawnProcess
 from gkmc.reactions import recombine
 import numpy as np
@@ -13,7 +14,7 @@ emDestroyH = 1.9
 emDestroyH2 = 0.06
 jumpLen = 34.4
 kb = 8.617e-5
-N = 20
+N = 14
 
 system = System()
 system.res = []
@@ -25,53 +26,26 @@ cellSize = 3
 system.particlesH = CellList(system, cellSize)
 system.particlesH2 = CellList(system, cellSize)
 
-
-class HParticle:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def move(self, dx, dy):
-        self.x = (self.x + dx) % system.w
-        self.y = (self.y + dy) % system.h
-
-    def __repr__(self):
-        return f'H({self.x}, {self.y})'
-
-
-class H2Particle:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def move(self, dx, dy):
-        self.x = (self.x + dx) % system.w
-        self.y = (self.y + dy) % system.h
-
-    def __repr__(self):
-        return f'H2({self.x}, {self.y})'
+HParticle = PBCParticle2D(system, system.h, system.w)
+H2Particle = PBCParticle2D(system, system.h, system.w)
 
 
 system.eagerness = 0
 system.dirty = []
 
 
-def recombineReaction(system):
-    recombine(system, system.dirty, recombineLen, H2Particle, system.particlesH, system.particlesH2)
-    system.dirty = []
+recombineLen = 2
 
+recombineReaction = recombine(system.dirty, recombineLen, H2Particle, system.particlesH, system.particlesH2, postproc=lambda s: s.dirty.clear())
 
 system.reactions = [recombineReaction]
-
-recombineLen = 2
 
 
 def rate(v, Em, temp):
     return v * np.exp(-Em / (kb * temp))
 
 
-def spawn(system):
-    spawnProcess(system, HParticle, system.particlesH, lambda s, p: s.dirty.append(p))
+spawn = spawnProcess(HParticle, system.particlesH, lambda s, p: s.dirty.append(p))
 
 
 def spawnrate(system):
@@ -81,8 +55,7 @@ def spawnrate(system):
 spawnProc = Process(spawn, spawnrate)
 
 
-def jump(system):
-    jumpProcess(system, jumpLen, system.particlesH, lambda s, p: s.dirty.append(p))
+jump = jumpProcess(jumpLen, system.particlesH, lambda s, p: s.dirty.append(p))
 
 
 def jumpRate(system):
@@ -99,8 +72,7 @@ def cleardirty(system, p):
         pass
 
 
-def destroyH(system):
-    destroyProcess(system, system.particlesH, cleardirty)
+destroyH = destroyProcess(system.particlesH, cleardirty)
 
 
 def destroyHRate(system):
@@ -109,9 +81,7 @@ def destroyHRate(system):
 
 destroyHProc = Process(destroyH, destroyHRate)
 
-
-def destroyH2(system):
-    destroyProcess(system, system.particlesH2)
+destroyH2 = destroyProcess(system.particlesH2)
 
 
 def destroyH2Rate(system):
